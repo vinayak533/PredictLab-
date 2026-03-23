@@ -1,8 +1,8 @@
 ---
 title: PredictLab AI
 emoji: 🧬
-colorFrom: cyan
-colorTo: blue
+colorFrom: blue
+colorTo: indigo
 sdk: docker
 pinned: false
 ---
