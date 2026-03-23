@@ -1,0 +1,292 @@
+{% extends "base.html" %} {% block title %}Stroke Risk Predictor - PredictLab{%
+endblock %} {% block page_name %}stroke{% endblock %} {% block content %}
+<div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mb-10 text-center">
+    <h1
+      class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 flex items-center justify-center gap-3 flex-wrap"
+    >
+      <div
+        class="w-12 h-12 rounded-lg bg-red-900/30 text-red-500 flex items-center justify-center text-2xl"
+      >
+        <i class="fa-solid fa-brain"></i>
+      </div>
+      Stroke Risk Predictor
+    </h1>
+    <p class="text-gray-400 max-w-full sm:max-w-2xl mx-auto">
+      Classifies stroke probability based on demographics and clinical features
+      using a Random Forest model.
+    </p>
+  </div>
+
+  <!-- Form Section -->
+  <div
+    class="bg-[#111827] border border-[#1f2937] rounded-2xl p-6 sm:p-10 mb-8 relative shadow-xl"
+  >
+    <form
+      id="prediction-form"
+      class="space-y-6 max-w-full lg:max-w-3xl mx-auto"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Age</label
+          >
+          <input
+            type="number"
+            id="age"
+            required
+            min="0"
+            max="120"
+            step="0.1"
+            class="w-full floating-input rounded-xl p-3"
+            placeholder="e.g. 55"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Average Glucose Level</label
+          >
+          <input
+            type="number"
+            id="avg_glucose_level"
+            required
+            min="0"
+            max="300"
+            step="0.1"
+            class="w-full floating-input rounded-xl p-3"
+            placeholder="e.g. 105.2"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >BMI</label
+          >
+          <input
+            type="number"
+            id="bmi"
+            required
+            min="0"
+            max="100"
+            step="0.1"
+            class="w-full floating-input rounded-xl p-3"
+            placeholder="e.g. 28.5"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Gender</label
+          >
+          <select
+            id="gender"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Hypertension</label
+          >
+          <select
+            id="hypertension"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Heart Disease</label
+          >
+          <select
+            id="heart_disease"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Ever Married</label
+          >
+          <select
+            id="ever_married"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Work Type</label
+          >
+          <select
+            id="work_type"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="Private">Private</option>
+            <option value="Self-employed">Self-employed</option>
+            <option value="Govt_job">Govt_job</option>
+            <option value="children">Children</option>
+            <option value="Never_worked">Never_worked</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Residence Type</label
+          >
+          <select
+            id="residence_type"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="Rural">Rural</option>
+            <option value="Urban">Urban</option>
+          </select>
+        </div>
+
+        <div class="md:col-span-2 lg:col-span-3">
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >Smoking Status</label
+          >
+          <select
+            id="smoking_status"
+            required
+            class="w-full floating-input rounded-xl p-3 appearance-none"
+          >
+            <option value="Unknown">Unknown</option>
+            <option value="formerly smoked">Formerly smoked</option>
+            <option value="never smoked">Never smoked</option>
+            <option value="smokes">Smokes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-6 text-center">
+        <button
+          type="submit"
+          class="w-full md:w-auto md:px-12 btn-primary py-4 rounded-xl font-bold flex items-center justify-center gap-3 mx-auto"
+        >
+          <span id="btn-text">Assess Risk Level</span>
+          <div id="btn-spinner" class="loader-spinner"></div>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Result Banner -->
+  <div
+    id="result-container"
+    class="hidden mb-12 max-w-full lg:max-w-3xl mx-auto"
+  >
+    <!-- Injected via JS -->
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document
+    .getElementById("prediction-form")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const btnText = document.getElementById("btn-text");
+      const btnSpinner = document.getElementById("btn-spinner");
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const resContainer = document.getElementById("result-container");
+
+      // Collect inputs dynamically
+      const inputs = [
+        "age",
+        "avg_glucose_level",
+        "bmi",
+        "gender",
+        "hypertension",
+        "heart_disease",
+        "ever_married",
+        "work_type",
+        "residence_type",
+        "smoking_status"
+      ];
+      const data = {};
+      inputs.forEach((id) => (data[id] = document.getElementById(id).value));
+
+      // UI Loading
+      btnText.textContent = "Processing...";
+      btnSpinner.style.display = "block";
+      submitBtn.disabled = true;
+      resContainer.classList.add("hidden");
+
+      try {
+        const response = await fetch("/predict/stroke", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+
+        resContainer.classList.remove("hidden");
+
+        if (response.ok) {
+          const isRisk = result.label === "High Stroke Risk";
+          const colorClass = isRisk ? "text-rose-500" : "text-emerald-500";
+          const bgClass = isRisk ? "bg-rose-500/10" : "bg-emerald-500/10";
+          const borderClass = isRisk
+            ? "border-rose-500/30"
+            : "border-emerald-500/30";
+          const icon = isRisk ? "fa-brain" : "fa-shield-heart";
+
+          resContainer.className = `flex-1 flex flex-col items-center justify-center border-2 rounded-2xl p-8 result-card text-center ${bgClass} ${borderClass} mb-12 max-w-full lg:max-w-3xl mx-auto`;
+          resContainer.innerHTML = `
+                <div class="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-[#111827] border ${borderClass}">
+                    <i class="fa-solid ${icon} text-4xl ${colorClass}"></i>
+                </div>
+                <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Prediction Result</div>
+                <h2 class="text-3xl font-extrabold ${colorClass} mb-4">${result.label}</h2>
+                <p class="text-sm text-gray-400">Our AI assistant will explain what this indicates.</p>
+            `;
+
+          if (window.onPredictionComplete) {
+            window.onPredictionComplete("stroke", data, result.label);
+          }
+        } else {
+          resContainer.className =
+            "flex-1 flex flex-col items-center justify-center bg-gray-900 border-2 border-gray-700 rounded-2xl p-8 result-card text-center mb-12 max-w-full lg:max-w-3xl mx-auto";
+          resContainer.innerHTML = `
+                <div class="text-gray-400 mb-4"><i class="fa-solid fa-circle-exclamation text-4xl"></i></div>
+                <h2 class="text-xl font-bold text-white mb-2">Prediction Unavailable</h2>
+                <p class="text-gray-400 text-sm">${result.error || "An error occurred."}</p>
+            `;
+        }
+      } catch (error) {
+        resContainer.classList.remove("hidden");
+        resContainer.className =
+          "flex-1 flex flex-col items-center justify-center bg-rose-900/10 border-2 border-rose-900/30 rounded-2xl p-8 result-card text-center mb-12 max-w-full lg:max-w-3xl mx-auto";
+        resContainer.innerHTML = `<h2 class="text-xl font-bold text-rose-500 mb-2">Network Error</h2><p class="text-gray-400 text-sm">Could not connect to the server.</p>`;
+      } finally {
+        btnText.textContent = "Assess Risk Level";
+        btnSpinner.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    });
+</script>
+{% endblock %}

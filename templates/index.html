@@ -1,0 +1,108 @@
+{% extends "base.html" %} {% block title %}PredictLab - ML Portfolio{% endblock
+%} {% block page_name %}home{% endblock %} {% block content %}
+<div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+  <!-- Hero Section -->
+  <div class="text-center py-16 mb-8 flex flex-col items-center">
+    <h1
+      class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold hero-gradient-text-new mb-6 text-center mx-auto break-words"
+    >
+      From raw data to real insights.
+    </h1>
+    <p
+      class="text-lg sm:text-xl text-gray-400 w-full sm:max-w-3xl mx-auto mt-2"
+    >
+      Clinical-grade health risk predictions — enhanced with
+      <span class="highlight-cyan-glow font-semibold text-white"
+        >Llama 3 AI intelligence</span
+      >.
+    </p>
+  </div>
+
+  <!-- Models Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Diabetes Card -->
+    <div
+      class="glass-card card-hover flex flex-col h-full rounded-2xl p-6 shadow-lg"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="w-12 h-12 rounded-lg bg-cyan-900/30 text-cyan-400 flex items-center justify-center text-2xl"
+        >
+          <i class="fa-solid fa-stethoscope"></i>
+        </div>
+        <span
+          class="bg-emerald-900/30 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-800/50"
+        >
+          89% Accuracy
+        </span>
+      </div>
+      <h3 class="text-2xl font-bold mb-2 text-white">Diabetes Scan</h3>
+      <p class="text-sm text-cyan-400 font-mono mb-4">
+        <span class="text-amber-400">⚡</span> SVM &middot; Linear Kernel
+      </p>
+      <p class="text-gray-400 text-sm flex-grow mb-6">
+        Enter your health metrics and instantly know your diabetes risk —
+        powered by an SVM trained on real clinical data.
+      </p>
+      <a
+        href="/diabetes"
+        class="mt-auto w-full btn-primary text-center py-3 rounded-xl font-bold"
+        >Try Model &rarr;</a
+      >
+    </div>
+
+    <!-- Stroke Risk Card -->
+    <div
+      class="bg-[#111827] border border-[#1f2937] rounded-2xl p-6 card-hover flex flex-col h-full shadow-2xl"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="w-12 h-12 rounded-lg bg-purple-900/30 text-purple-500 flex items-center justify-center text-2xl"
+        >
+          <i class="fa-solid fa-brain"></i>
+        </div>
+      </div>
+      <h3 class="text-2xl font-bold mb-2">Stroke Risk</h3>
+      <p class="text-sm text-cyan-400 font-mono mb-4">
+        🌲 Random Forest Ensemble • 88.3% Accuracy
+      </p>
+      <p class="text-gray-400 text-sm flex-grow mb-6">
+        Assess your stroke risk in seconds. Trained on real clinical data across
+        demographics, lifestyle, and medical history.
+      </p>
+      <a
+        href="/stroke"
+        class="mt-auto w-full btn-primary text-center py-3 rounded-xl font-bold"
+        >Try Model &rarr;</a
+      >
+    </div>
+
+    <!-- Heart Disease Card -->
+    <div
+      class="bg-[#111827] border border-[#1f2937] rounded-2xl p-6 card-hover flex flex-col h-full shadow-2xl"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div
+          class="w-12 h-12 rounded-lg bg-pink-900/30 text-pink-500 flex items-center justify-center text-2xl"
+        >
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+      </div>
+      <h3 class="text-2xl font-bold mb-2">CardioScan</h3>
+      <p class="text-sm text-cyan-400 font-mono mb-4">
+        📈 Logistic Regression • 91% Accuracy
+      </p>
+      <p class="text-gray-400 text-sm flex-grow mb-6">
+        Enter your cardiac test results for an instant heart disease risk
+        assessment — powered by Logistic Regression trained on real clinical
+        data across 13 key markers.
+      </p>
+      <a
+        href="/heart"
+        class="mt-auto w-full btn-primary text-center py-3 rounded-xl font-bold"
+        >Try Model &rarr;</a
+      >
+    </div>
+  </div>
+</div>
+{% endblock %}

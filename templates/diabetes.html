@@ -1,0 +1,191 @@
+{% extends "base.html" %} {% block title %}Diabetes Predictor - PredictLab{%
+endblock %} {% block page_name %}diabetes{% endblock %} {% block content %}
+<div class="w-full max-w-4xl mx-auto px-4 sm:px-6">
+  <div class="mb-10">
+    <h1 class="text-4xl font-bold mb-4 flex items-center gap-3">
+      <div
+        class="w-12 h-12 rounded-lg bg-cyan-900/30 text-cyan-400 flex items-center justify-center text-2xl"
+      >
+        <i class="fa-solid fa-stethoscope"></i>
+      </div>
+      Pima Diabetes Predictor
+    </h1>
+    <p class="text-gray-400">
+      Predicts the likelihood of diabetes in females of Pima Indian heritage
+      using a Support Vector Machine (Linear Kernel).
+    </p>
+  </div>
+
+  <!-- Form & Result Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+    <!-- Form Section -->
+    <div
+      class="lg:col-span-3 bg-[#111827] border border-[#1f2937] rounded-2xl p-6 sm:p-8 relative"
+    >
+      <form id="prediction-form" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {% for field in [ {'label':'Pregnancies
+          (0-17)','id':'pregnancies','min':0,'max':25,'step':1,'placeholder':'2'},
+          {'label':'Glucose
+          (0-200)','id':'glucose','min':0,'max':300,'placeholder':'120'},
+          {'label':'Blood Pressure
+          (0-122)','id':'blood_pressure','min':0,'max':200,'placeholder':'70'},
+          {'label':'Skin Thickness
+          (0-99)','id':'skin_thickness','min':0,'max':150,'placeholder':'20'},
+          {'label':'Insulin
+          (0-846)','id':'insulin','min':0,'max':1000,'placeholder':'80'},
+          {'label':'BMI
+          (0.0-67.1)','id':'bmi','min':0,'max':100,'step':0.1,'placeholder':'32.0'},
+          {'label':'Diabetes Pedigree
+          (0.0-2.5)','id':'dpf','min':0,'max':5,'step':0.01,'placeholder':'0.5'},
+          {'label':'Age
+          (21-81)','id':'age','min':1,'max':120,'placeholder':'45'} ] %}
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-2"
+              >{{ field.label }}</label
+            >
+            <input
+              type="number"
+              id="{{ field.id }}"
+              required
+              min="{{ field.min }}"
+              max="{{ field.max }}"
+              {%
+              if
+              field.step
+              %}
+              step="{{ field.step }}"
+              {%
+              endif
+              %}
+              class="w-full floating-input rounded-xl p-3"
+              placeholder="{{ field.placeholder }}"
+            />
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="pt-4">
+          <button
+            type="submit"
+            class="w-full btn-primary py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
+          >
+            <span id="btn-text">Run Prediction</span>
+            <div id="btn-spinner" class="loader-spinner"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Result Section -->
+    <div class="lg:col-span-2 flex flex-col gap-4">
+      <div
+        id="result-container"
+        class="hidden flex-1 flex flex-col items-center justify-center bg-[#111827] border border-[#1f2937] rounded-2xl p-8 result-card text-center"
+      >
+        <!-- JS Injected -->
+      </div>
+
+      <div
+        id="placeholder-container"
+        class="flex-1 flex flex-col items-center justify-center bg-[#111827]/50 border border-dashed border-[#1f2937] rounded-2xl p-8 text-center"
+      >
+        <i class="fa-solid fa-chart-bar text-4xl text-gray-600 mb-4"></i>
+        <h3 class="text-xl font-bold text-gray-500 mb-2">Awaiting Data</h3>
+        <p class="text-sm text-gray-600">
+          Fill out the form to generate a prediction.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  document
+    .getElementById("prediction-form")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const btnText = document.getElementById("btn-text");
+      const btnSpinner = document.getElementById("btn-spinner");
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const resContainer = document.getElementById("result-container");
+      const placeholder = document.getElementById("placeholder-container");
+
+      // Collect inputs dynamically
+      const inputs = [
+        "pregnancies",
+        "glucose",
+        "blood_pressure",
+        "skin_thickness",
+        "insulin",
+        "bmi",
+        "dpf",
+        "age",
+      ];
+      const data = {};
+      inputs.forEach((id) => (data[id] = document.getElementById(id).value));
+
+      // UI Loading
+      btnText.textContent = "Processing...";
+      btnSpinner.style.display = "block";
+      submitBtn.disabled = true;
+      resContainer.classList.add("hidden");
+      placeholder.classList.remove("hidden");
+
+      try {
+        const response = await fetch("/predict/diabetes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+
+        placeholder.classList.add("hidden");
+        resContainer.classList.remove("hidden");
+
+        if (response.ok) {
+          const isRisk = result.label === "Diabetic";
+          const colorClass = isRisk ? "text-rose-500" : "text-emerald-500";
+          const bgClass = isRisk ? "bg-rose-500/10" : "bg-emerald-500/10";
+          const borderClass = isRisk
+            ? "border-rose-500/30"
+            : "border-emerald-500/30";
+          const icon = isRisk ? "fa-triangle-exclamation" : "fa-shield-heart";
+
+          resContainer.className = `flex-1 flex flex-col items-center justify-center border-2 rounded-2xl p-8 result-card text-center ${bgClass} ${borderClass}`;
+          resContainer.innerHTML = `
+                <div class="w-20 h-20 rounded-full flex items-center justify-center mb-6 bg-[#111827] border ${borderClass}">
+                    <i class="fa-solid ${icon} text-4xl ${colorClass}"></i>
+                </div>
+                <div class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">Prediction Result</div>
+                <h2 class="text-3xl font-extrabold ${colorClass} mb-4">${result.label}</h2>
+                <p class="text-sm text-gray-400">Our AI assistant will explain what this indicates.</p>
+            `;
+
+          if (window.onPredictionComplete) {
+            window.onPredictionComplete("diabetes", data, result.label);
+          }
+        } else {
+          resContainer.className =
+            "flex-1 flex flex-col items-center justify-center bg-gray-900 border-2 border-gray-700 rounded-2xl p-8 result-card text-center";
+          resContainer.innerHTML = `
+                <div class="text-gray-400 mb-4"><i class="fa-solid fa-circle-exclamation text-4xl"></i></div>
+                <h2 class="text-xl font-bold text-white mb-2">Prediction Unavailable</h2>
+                <p class="text-gray-400 text-sm">${result.error || "An error occurred."}</p>
+            `;
+        }
+      } catch (error) {
+        placeholder.classList.add("hidden");
+        resContainer.classList.remove("hidden");
+        resContainer.className =
+          "flex-1 flex flex-col items-center justify-center bg-rose-900/10 border-2 border-rose-900/30 rounded-2xl p-8 result-card text-center";
+        resContainer.innerHTML = `<h2 class="text-xl font-bold text-rose-500 mb-2">Network Error</h2><p class="text-gray-400 text-sm">Could not connect to the server.</p>`;
+      } finally {
+        btnText.textContent = "Run Prediction";
+        btnSpinner.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    });
+</script>
+{% endblock %}

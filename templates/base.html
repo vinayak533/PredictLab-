@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}PredictLab{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css" />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body data-page="{% block page_name %}home{% endblock %}">
+    <!-- Sticky Navbar -->
+    <nav class="fixed top-0 w-full z-40 backdrop-blur-nav">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0">
+            <a
+              href="/"
+              class="text-2xl font-bold display-font text-white flex items-center gap-2"
+            >
+              <i class="fa-solid fa-flask text-cyan-400"></i> PredictLab
+            </a>
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-4">
+              <a
+                href="/"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >Home</a
+              >
+              <a
+                href="/diabetes"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >Diabetes</a
+              >
+              <a
+                href="/stroke"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >Stroke</a
+              >
+              <a
+                href="/heart"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >Heart Disease</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 min-h-screen flex flex-col items-center">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="border-t border-gray-800 py-8 text-center text-gray-500 text-sm mt-auto w-full"
+    >
+      Built with FastAPI + Groq Llama 3 + scikit-learn
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-widget" class="z-50">
+      <!-- Toggle Button -->
+      <button
+        id="chat-toggle"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110"
+      >
+        <i class="fa-solid fa-robot text-2xl"></i>
+      </button>
+
+      <!-- Chat Panel -->
+      <div
+        id="chat-panel"
+        class="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 w-[90vw] max-w-md h-[70vh] sm:h-[80vh] bg-[rgba(17,24,39,0.65)] backdrop-blur-lg rounded-xl shadow-2xl flex flex-col opacity-0 pointer-events-none transition-all transform translate-y-10 sm:translate-y-0"
+      >
+        <div
+          id="chat-header"
+          class="flex justify-between items-center p-4 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/20 to-transparent rounded-t-xl"
+        >
+          <div
+            class="font-bold display-font text-white flex items-center gap-3"
+          >
+            <div class="relative">
+              <i class="fa-solid fa-robot text-cyan-400 text-xl"></i>
+              <div class="absolute -bottom-1 -right-1 online-dot"></div>
+            </div>
+            <span>Llama 3 AI Assistant</span>
+          </div>
+          <button
+            id="close-chat"
+            class="text-gray-400 hover:text-white transition-colors"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div
+          id="chat-messages"
+          class="flex-1 overflow-y-auto p-3 flex flex-col gap-2"
+        >
+          <div class="chat-bubble chat-bot">
+            Hello! I'm here to help you understand your machine learning
+            predictions.
+          </div>
+          <div class="typing-indicator" id="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div
+          id="chat-input-area"
+          class="flex gap-2 p-3 border-t border-cyan-500/20"
+        >
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Ask a question..."
+            autocomplete="off"
+            class="flex-1 rounded-full p-2 bg-[rgba(0,0,0,0.4)] text-white outline-none border border-gray-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all"
+          />
+          <button
+            id="chat-send"
+            class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow hover:scale-95 transition-transform"
+          >
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chatbot Logic -->
+    <script>
+      window.chatContext = {
+        current_page: document.body.dataset.page || "home",
+        inputs: {},
+        prediction: null,
+      };
+
+      const chatToggle = document.getElementById("chat-toggle");
+      const chatPanel = document.getElementById("chat-panel");
+      const closeChat = document.getElementById("close-chat");
+      const chatMessages = document.getElementById("chat-messages");
+      const chatInput = document.getElementById("chat-input");
+      const chatSend = document.getElementById("chat-send");
+      const typingIndicator = document.getElementById("typing-indicator");
+
+      function toggleChat() {
+        chatPanel.classList.toggle("open");
+        if (chatPanel.classList.contains("open")) chatInput.focus();
+      }
+
+      chatToggle.addEventListener("click", toggleChat);
+      closeChat.addEventListener("click", () =>
+        chatPanel.classList.remove("open"),
+      );
+
+      function appendMessage(sender, text) {
+        const div = document.createElement("div");
+        div.className = `chat-bubble ${sender === "user" ? "chat-user" : "chat-bot"}`;
+        div.textContent = text;
+        chatMessages.insertBefore(div, typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function showTypingIndicator() {
+        typingIndicator.style.display = "flex";
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      function hideTypingIndicator() {
+        typingIndicator.style.display = "none";
+      }
+
+      async function sendChatMessage(userMessage) {
+        if (!userMessage.trim()) return;
+        appendMessage("user", userMessage);
+        chatInput.value = "";
+        showTypingIndicator();
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: userMessage,
+              context: window.chatContext,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            hideTypingIndicator();
+            appendMessage("bot", data.reply);
+          } else {
+            hideTypingIndicator();
+            appendMessage(
+              "bot",
+              "Sorry, I had trouble connecting to the network.",
+            );
+          }
+        } catch (err) {
+          hideTypingIndicator();
+          appendMessage("bot", "Error connecting to AI service.");
+        }
+      }
+
+      chatSend.addEventListener("click", () =>
+        sendChatMessage(chatInput.value),
+      );
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendChatMessage(chatInput.value);
+      });
+
+      window.onPredictionComplete = function (page, inputs, prediction) {
+        window.chatContext = { current_page: page, inputs, prediction };
+        sendChatMessage(
+          "I just got a prediction result. Can you explain what this means?",
+        );
+      };
+    </script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
