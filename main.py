@@ -33,22 +33,22 @@ models, scalers = load_models()
 # Route: Homepage
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", context={"request": request})
 
 # Route: Diabetes Predictor
 @app.get("/diabetes", response_class=HTMLResponse)
 async def read_diabetes(request: Request):
-    return templates.TemplateResponse("diabetes.html", {"request": request})
+    return templates.TemplateResponse("diabetes.html", context={"request": request})
 
 # Route: Stroke Predictor
 @app.get("/stroke", response_class=HTMLResponse)
 async def read_stroke(request: Request):
-    return templates.TemplateResponse("stroke.html", {"request": request})
+    return templates.TemplateResponse("stroke.html", context={"request": request})
 
 # Route: Heart Predictor
 @app.get("/heart", response_class=HTMLResponse)
 async def read_heart(request: Request):
-    return templates.TemplateResponse("heart.html", {"request": request})
+    return templates.TemplateResponse("heart.html", context={"request": request})
 
 # Prediction Endpoints
 @app.post("/predict/diabetes")
