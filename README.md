@@ -68,7 +68,7 @@ A premium, production-ready full-stack machine learning portfolio application bu
    ```
 
 6. **View the Application:**
-   Open [http://localhost:8000](http://localhost:8000) in your modern web browser.
+  https://huggingface.co/spaces/VINAYAKKV/Predict-Ai
 
 ---
 
