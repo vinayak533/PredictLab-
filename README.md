@@ -1,3 +1,12 @@
+---
+title: PredictLab AI
+emoji: 🧬
+colorFrom: cyan
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # PredictLab: Machine Learning Portfolio Web App
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
