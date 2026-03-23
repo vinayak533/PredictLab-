@@ -1,11 +1,4 @@
----
-title: PredictLab AI
-emoji: 🧬
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-pinned: false
----
+
 
 # PredictLab: Machine Learning Portfolio Web App
 
