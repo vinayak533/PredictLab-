@@ -317,3 +317,11 @@ These are follow-up opportunities, not implemented features or committed deliver
 - Publish the training and evaluation workflow with dataset provenance and per-model compatibility checks.
 - Add typed prediction schemas and automated endpoint tests, including unavailable-model and unavailable-assistant cases.
 - Package frontend dependencies locally and improve request handling, observability, and deployment hardening before broader use.
+
+## 👨‍💻 Author
+
+**Vinayak K V** · AI/ML Engineer at AMnova Technologies
+
+🐙 [GitHub](https://github.com/vinayak533) · 💼 [LinkedIn](https://linkedin.com/in/vinayak-kv-ds) · 📧 [Email](mailto:vinayakkvjob@gmail.com)
+
+🤖 Building production multi-agent AI systems. 🤝 Open to technical discussions and collaboration.
